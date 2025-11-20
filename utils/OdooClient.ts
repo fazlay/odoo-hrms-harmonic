@@ -70,7 +70,12 @@ class OdooClient {
 
   async authenticate(): Promise<number> {
     try {
-      console.log("🔑 Authenticating with Odoo...");
+      console.log(
+        "🔑 Authenticating with Odoo...",
+        this.config.db,
+        this.config.username,
+        this.config.password
+      );
 
       const result = await this.jsonRpc("/web/session/authenticate", {
         db: this.config.db,

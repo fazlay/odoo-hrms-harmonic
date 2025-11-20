@@ -75,26 +75,27 @@ PartnerService (Business Logic)
 ## **📂 Project Structure**
 
 ```plaintext
+
 your-project/
-├── config/
-│   ├── odoo.config.ts      # Odoo connection settings
-│   ├── types.ts           # TypeScript types
-│   └── constants.ts       # Reusable constants
-├── lib/
-│   └── OdooClient.ts      # Low-level API client
-├── services/
-│   └── partner.service.ts # Business logic for partners
-├── context/
-│   └── OdooContext.tsx     # Global Odoo state
-├── hooks/
-│   └── usePartners.ts      # Custom hook for partners
+├── app/
+│   ├── (tabs)/
+│   │   ├── index.tsx          ← Your home screen
+│   │   └── ...
+│   └── _layout.tsx            ← Updated: Shows LoginScreen or main app
 ├── components/
-│   └── Partner/
-│       ├── PartnerCard.tsx # Single partner UI
-│       ├── PartnerList.tsx # List of partners
-│       └── PartnerForm.tsx # Create/edit partners
-└── app/(tabs)/
-    └── partners.tsx        # Partners screen
+│   ├── LoginScreen.tsx        ← New: Login component
+│   ├── hello-wave.tsx
+│   └── ...
+├── context/
+│   └── OdooContext.tsx        ← Updated: With saveAndConnect, logout
+├── utils/
+│   ├── OdooClient.ts          ← Existing
+│   └── ConfigManager.ts       ← New: Secure storage
+├── config/
+│   ├── types.ts               ← Existing
+│   └── constants.ts           ← Existing
+└── hooks/
+    └── usePartners.ts         ← Existing
 ```
 
 ---

@@ -1,37 +1,47 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
+// app/_layout.tsx
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { OdooProvider, useOdoo } from "@/context/OdooContext";
+import LoginScreen from "@/components/LoginScreen";
+import { ActivityIndicator, View, StyleSheet } from "react-native";
 
-import { OdooProvider } from "@/context/OdooContext";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-// import { OdooProvider } from "@/context/OdooContext";
+function AppContent() {
+  const { isConfigured, isLoading } = useOdoo();
 
-import "react-native-reanimated";
-// import { OdooProvider } from "../context/OdooContext";
+  // Show loading spinner while checking config
+  if (isLoading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
+  // Show login screen if not configured
+  if (!isConfigured) {
+    return <LoginScreen />;
+  }
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+  // Show main app if configured
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <OdooProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: "modal", title: "Modal" }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </OdooProvider>
-    </ThemeProvider>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
   );
 }
+
+export default function RootLayout() {
+  return (
+    <OdooProvider>
+      <AppContent />
+    </OdooProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+});

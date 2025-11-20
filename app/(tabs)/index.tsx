@@ -1,64 +1,38 @@
+// app/(tabs)/index.tsx
 import { Image } from "expo-image";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import React from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 import { HelloWave } from "@/components/hello-wave";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import OdooClient from "@/utils/OdooClient";
+import { useOdoo } from "@/context/OdooContext";
+import { useCompanies } from "@/hooks/usePartners";
 
 export default function HomeScreen() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [partners, setPartners] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { logout, uid, client } = useOdoo();
 
-  useEffect(() => {
-    fetchPartners();
-  }, []);
+  // ✅ Use the hook that automatically fetches from the authenticated client
+  const { partners, isLoading, error } = useCompanies(5);
 
-  const fetchPartners = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      // Initialize and authenticate
-      const odoo = new OdooClient({
-        url: "http://192.168.0.105:8018",
-        db: "backup_payroll",
-        username: "admin@jamunagas.com",
-        password: "demo",
-      });
-
-      await odoo.authenticate();
-
-      // Fetch partners
-      const data = await odoo.searchRead(
-        "res.partner",
-        [["is_company", "=", true]],
-        ["name", "email"],
-        50
-      );
-
-      setPartners(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch data");
-      console.error("❌ Error:", err);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          await logout();
+        },
+      },
+    ]);
   };
-
-  const renderPartner = ({ item, index }: { item: any; index: number }) => (
-    <ThemedView style={styles.partnerCard}>
-      <ThemedText style={styles.partnerName}>
-        {index + 1}. {item.name}
-      </ThemedText>
-      {item.email && (
-        <ThemedText style={styles.partnerEmail}>{item.email}</ThemedText>
-      )}
-    </ThemedView>
-  );
 
   return (
     <ParallaxScrollView
@@ -70,28 +44,48 @@ export default function HomeScreen() {
         />
       }
     >
+      {/* User Info & Logout */}
+      <ThemedView style={styles.userInfoContainer}>
+        <ThemedView style={styles.userInfo}>
+          <ThemedText style={styles.userText}>👤 User ID: {uid}</ThemedText>
+        </ThemedView>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <ThemedText style={styles.logoutText}>🚪 Logout</ThemedText>
+        </TouchableOpacity>
+      </ThemedView>
+
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
 
       <ThemedView style={styles.content}>
-        <ThemedText type="subtitle">Company Partners</ThemedText>
+        <ThemedText type="subtitle">
+          Company Partners ({partners.length})
+        </ThemedText>
 
         {isLoading ? (
           <ActivityIndicator size="large" style={styles.loader} />
         ) : error ? (
           <ThemedText style={styles.error}>Error: {error}</ThemedText>
         ) : (
-          <FlatList
-            data={partners}
-            renderItem={renderPartner}
-            keyExtractor={(item) => item.id.toString()}
-            scrollEnabled={false}
-            ListEmptyComponent={
+          <ThemedView>
+            {partners.map((partner, index) => (
+              <ThemedView key={partner.id} style={styles.partnerCard}>
+                <ThemedText style={styles.partnerName}>
+                  {index + 1}. {partner.name}
+                </ThemedText>
+                {partner.email && (
+                  <ThemedText style={styles.partnerEmail}>
+                    {partner.email}
+                  </ThemedText>
+                )}
+              </ThemedView>
+            ))}
+            {partners.length === 0 && (
               <ThemedText style={styles.empty}>No partners found</ThemedText>
-            }
-          />
+            )}
+          </ThemedView>
         )}
       </ThemedView>
     </ParallaxScrollView>
@@ -103,6 +97,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+    marginTop: 16,
   },
   reactLogo: {
     height: 178,
@@ -110,6 +105,33 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  userInfoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "rgba(0, 122, 255, 0.1)",
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  logoutButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "#ff3b30",
+    borderRadius: 6,
+  },
+  logoutText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
   },
   content: {
     marginTop: 20,
