@@ -120,13 +120,15 @@ class OdooClient {
     domain: any[] = [],
     fields: string[] = [],
     limit?: number,
-    offset?: number
+    offset?: number,
+    order?: string
   ): Promise<any[]> {
     return this.call(model, "search_read", [], {
       domain: domain,
       fields: fields,
       limit: limit,
       offset: offset,
+      order: order,
     });
   }
 

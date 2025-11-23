@@ -48,7 +48,7 @@ class AttendanceService {
     }
 
     const attendanceRecords = await odoo.searchRead(
-      ODOO_MODELS.PARTNER,
+      ODOO_MODELS.ATTENDANCE,
       domain,
       // PARTNER_FIELDS.* may be readonly; cast to mutable string[] for the client API
       fields as unknown as string[],
@@ -57,6 +57,66 @@ class AttendanceService {
     );
 
     return attendanceRecords;
+  }
+
+  /**
+   * Get the current open attendance record for an employee (if any)
+   */
+  async getOpenAttendance(
+    odoo: OdooClient,
+    employeeId: number
+  ): Promise<Attendance | null> {
+    const domain = [
+      ["employee_id", "=", employeeId],
+      ["check_out", "=", false],
+    ];
+
+    const records = await odoo.searchRead(
+      ODOO_MODELS.ATTENDANCE,
+      domain,
+      ATTENDANCE_FIELDS.BASIC as unknown as string[],
+      1
+    );
+
+    return records.length > 0 ? records[0] : null;
+  }
+
+  /**
+   * Get today's attendance record for an employee
+   */
+  async getTodaysAttendance(
+    odoo: OdooClient,
+    employeeId: number
+  ): Promise<Attendance | null> {
+    // Get today's date range in UTC (Odoo stores in UTC)
+    // For simplicity, we'll use local date string comparison which works for most single-timezone cases
+    // Ideally, this should handle timezones properly
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0))
+      .toISOString()
+      .replace("T", " ")
+      .split(".")[0];
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999))
+      .toISOString()
+      .replace("T", " ")
+      .split(".")[0];
+
+    const domain = [
+      ["employee_id", "=", employeeId],
+      ["check_in", ">=", startOfDay],
+      ["check_in", "<=", endOfDay],
+    ];
+
+    const records = await odoo.searchRead(
+      ODOO_MODELS.ATTENDANCE,
+      domain,
+      ATTENDANCE_FIELDS.BASIC as unknown as string[],
+      1,
+      0,
+      "check_in desc" // Get the latest one
+    );
+
+    return records.length > 0 ? records[0] : null;
   }
 
   /**
