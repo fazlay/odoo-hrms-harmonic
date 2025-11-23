@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -57,8 +58,18 @@ export function DashboardSummary({ refreshTrigger }: { refreshTrigger?: number }
         return () => clearInterval(statusTimer);
     }, [client, refreshTrigger]);
 
+    const gradientColors: readonly [string, string, string] =
+        colorScheme === "dark"
+            ? ["#338EF7", "#1E5FCC", "#0F3B8C"]
+            : ["#006FEE", "#0062D1", "#0052B3"];
+
     return (
-        <View style={[styles.card, { backgroundColor: theme.tint }]}>
+        <LinearGradient
+            colors={gradientColors}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.card}
+        >
             <View style={styles.row}>
                 <View>
                     <ThemedText style={styles.dateText}>
@@ -87,7 +98,7 @@ export function DashboardSummary({ refreshTrigger }: { refreshTrigger?: number }
                         : "Not checked in yet"}
                 </ThemedText>
             </View>
-        </View>
+        </LinearGradient>
     );
 }
 

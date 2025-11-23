@@ -27,7 +27,7 @@ export function HomePartnerList() {
                 </View>
             ) : error ? (
                 <View style={styles.centerContainer}>
-                    <Ionicons name="alert-circle-outline" size={48} color="red" />
+                    <Ionicons name="alert-circle-outline" size={48} color={theme.error} />
                     <ThemedText style={styles.error}>Error: {error}</ThemedText>
                 </View>
             ) : (
@@ -35,7 +35,7 @@ export function HomePartnerList() {
                     {partners.map((partner) => (
                         <View
                             key={partner.id}
-                            style={[styles.card, { backgroundColor: theme.background }]}
+                            style={[styles.card, { backgroundColor: theme.card }]}
                         >
                             <View style={[styles.avatar, { backgroundColor: theme.tint }]}>
                                 <ThemedText style={styles.avatarText}>
@@ -81,17 +81,17 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
-        marginBottom: 8,
+        marginBottom: 12,
     },
     badge: {
-        backgroundColor: "rgba(0, 122, 255, 0.1)",
-        paddingHorizontal: 8,
-        paddingVertical: 2,
-        borderRadius: 12,
+        backgroundColor: "rgba(0, 111, 238, 0.15)",
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 16,
     },
     badgeText: {
-        color: "#007AFF",
-        fontSize: 12,
+        color: "#006FEE",
+        fontSize: 13,
         fontWeight: "bold",
     },
     centerContainer: {
@@ -105,33 +105,33 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: "row",
         alignItems: "center",
-        padding: 12,
-        borderRadius: 12,
-        gap: 12,
+        padding: 16,
+        borderRadius: 16,
+        gap: 14,
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
-            height: 1,
+            height: 4,
         },
-        shadowOpacity: 0.05,
-        shadowRadius: 2,
-        elevation: 2,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
     },
     avatar: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
         justifyContent: "center",
         alignItems: "center",
     },
     avatarText: {
         color: "white",
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "bold",
     },
     info: {
         flex: 1,
-        gap: 2,
+        gap: 4,
     },
     name: {
         fontSize: 16,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     error: {
-        color: "red",
+        color: "#F31260",
         textAlign: "center",
     },
     emptyContainer: {

@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -9,6 +10,7 @@ import Animated, {
 
 import { ThemedText } from "@/components/themed-text";
 import { useOdoo } from "@/context/OdooContext";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import { attendanceService } from "@/services/attendance.service";
 
 export function AttendanceButton({
@@ -17,6 +19,7 @@ export function AttendanceButton({
     onAttendanceChange?: () => void;
 }) {
     const { client } = useOdoo();
+    const colorScheme = useColorScheme();
     const scale = useSharedValue(1);
     const [isLoading, setIsLoading] = useState(true);
     const [currentAttendance, setCurrentAttendance] = useState<any>(null);
@@ -98,38 +101,49 @@ export function AttendanceButton({
     // We are "Checked In" if we have a record AND check_out is false/empty
     const isCheckedIn = currentAttendance && !currentAttendance.check_out;
 
+    const gradientColors: readonly [string, string, string] = isCheckedIn
+        ? colorScheme === "dark"
+            ? ["#F7B750", "#E89B2E", "#D67F0C"]
+            : ["#F5A524", "#E89B2E", "#D67F0C"]
+        : colorScheme === "dark"
+            ? ["#338EF7", "#1E5FCC", "#0F3B8C"]
+            : ["#006FEE", "#0062D1", "#0052B3"];
+
     return (
         <View style={styles.container}>
             <Animated.View style={[styles.buttonWrapper, animatedStyle]}>
                 <TouchableOpacity
-                    style={[
-                        styles.button,
-                        { backgroundColor: isCheckedIn ? "#FF9500" : "#007AFF" },
-                    ]}
                     onPress={handlePress}
                     activeOpacity={0.9}
                     disabled={isLoading}
                 >
-                    <View style={styles.iconContainer}>
-                        {isLoading ? (
-                            <ActivityIndicator color="white" />
-                        ) : (
-                            <Ionicons
-                                name={isCheckedIn ? "log-out-outline" : "finger-print"}
-                                size={32}
-                                color="white"
-                            />
-                        )}
-                    </View>
-                    <View style={styles.textContainer}>
-                        <ThemedText style={styles.buttonTitle}>
-                            {isCheckedIn ? "Punch Out" : "Punch In"}
-                        </ThemedText>
-                        <ThemedText style={styles.buttonSubtitle}>
-                            {isCheckedIn ? "End your shift" : "Start your shift"}
-                        </ThemedText>
-                    </View>
-                    <Ionicons name="chevron-forward" size={24} color="white" />
+                    <LinearGradient
+                        colors={gradientColors}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.button}
+                    >
+                        <View style={styles.iconContainer}>
+                            {isLoading ? (
+                                <ActivityIndicator color="white" />
+                            ) : (
+                                <Ionicons
+                                    name={isCheckedIn ? "log-out-outline" : "finger-print"}
+                                    size={32}
+                                    color="white"
+                                />
+                            )}
+                        </View>
+                        <View style={styles.textContainer}>
+                            <ThemedText style={styles.buttonTitle}>
+                                {isCheckedIn ? "Punch Out" : "Punch In"}
+                            </ThemedText>
+                            <ThemedText style={styles.buttonSubtitle}>
+                                {isCheckedIn ? "End your shift" : "Start your shift"}
+                            </ThemedText>
+                        </View>
+                        <Ionicons name="chevron-forward" size={24} color="white" />
+                    </LinearGradient>
                 </TouchableOpacity>
             </Animated.View>
         </View>
