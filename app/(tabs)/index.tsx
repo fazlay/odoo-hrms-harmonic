@@ -1,4 +1,5 @@
 // app/(tabs)/index.tsx
+import { format } from "date-fns";
 import { Image } from "expo-image";
 import React from "react";
 import {
@@ -14,6 +15,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useOdoo } from "@/context/OdooContext";
 import { useCompanies } from "@/hooks/usePartners";
+import { attendanceService } from "@/services/attendance.service";
 
 export default function HomeScreen() {
   const { logout, uid, client } = useOdoo();
@@ -32,6 +34,19 @@ export default function HomeScreen() {
         },
       },
     ]);
+  };
+
+  const createAttendance = async (client: any) => {
+    try {
+      const newAttendanceId = await attendanceService.createAttendance(client, {
+        employee_id: 910, // Replace with actual employee ID
+        // time date format should be like this '%Y-%m-%d %H:%M:%S'
+        check_in: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+      });
+      console.log("New attendance record created with ID:", newAttendanceId);
+    } catch (error) {
+      console.error("Error creating attendance record:", error);
+    }
   };
 
   return (
@@ -53,7 +68,13 @@ export default function HomeScreen() {
           <ThemedText style={styles.logoutText}>🚪 Logout</ThemedText>
         </TouchableOpacity>
       </ThemedView>
-
+      {/* PUNCH IN */}
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => createAttendance(client)}
+      >
+        <ThemedText style={styles.logoutText}>PUNCH IN</ThemedText>
+      </TouchableOpacity>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />

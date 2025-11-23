@@ -26,6 +26,14 @@ export interface Partner {
   is_company?: boolean;
 }
 
+// Attendance model type
+export interface Attendance {
+  id: number;
+  employee_id: number;
+  check_in: string;
+  check_out?: string;
+}
+
 // Generic API response wrapper
 export interface ApiResponse<T> {
   data: T;
