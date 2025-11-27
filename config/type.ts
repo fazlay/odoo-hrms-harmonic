@@ -32,6 +32,15 @@ export interface Attendance {
   employee_id: number;
   check_in: string;
   check_out?: string;
+  in_latitude?: number;
+  in_longitude?: number;
+  out_latitude?: number;
+  out_longitude?: number;
+  in_mode?: string;
+  in_city?: string;
+  in_country_name?: string;
+  out_city?: string;
+  out_country_name?: string;
 }
 
 // Generic API response wrapper

@@ -19,11 +19,16 @@ export interface CreateAttendanceData {
   employee_id: number;
   check_in: string;
   check_out?: string;
+  in_latitude?: number;
+  in_longitude?: number;
+  in_mode?: string;
 }
 
 export interface UpdateAttendanceData {
   check_in?: string;
   check_out?: string;
+  out_latitude?: number;
+  out_longitude?: number;
 }
 
 class AttendanceService {

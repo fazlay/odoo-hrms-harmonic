@@ -11,6 +11,7 @@ import Animated, {
 import { ThemedText } from "@/components/themed-text";
 import { useOdoo } from "@/context/OdooContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useLocation } from "@/hooks/use-location";
 import { attendanceService } from "@/services/attendance.service";
 
 export function AttendanceButton({
@@ -20,6 +21,7 @@ export function AttendanceButton({
 }) {
     const { client } = useOdoo();
     const colorScheme = useColorScheme();
+    const { requestLocation } = useLocation();
     const scale = useSharedValue(1);
     const [isLoading, setIsLoading] = useState(true);
     const [currentAttendance, setCurrentAttendance] = useState<any>(null);
@@ -64,6 +66,9 @@ export function AttendanceButton({
             // Send UTC time to Odoo
             const now = new Date().toISOString().replace("T", " ").split(".")[0];
 
+            // Get current location
+            const coords = await requestLocation();
+
             // Logic:
             // If we have a record for today AND it is NOT checked out -> Punch Out
             // If we have NO record for today OR it IS checked out -> Punch In
@@ -74,6 +79,8 @@ export function AttendanceButton({
                 // Punch Out
                 await attendanceService.updateAttendance(client, currentAttendance.id, {
                     check_out: now,
+                    out_latitude: coords?.latitude,
+                    out_longitude: coords?.longitude,
                 });
                 // After punch out, we still have a record for today, but it's checked out.
                 // We refresh to get the updated record.
@@ -82,6 +89,9 @@ export function AttendanceButton({
                 await attendanceService.createAttendance(client, {
                     employee_id: EMPLOYEE_ID,
                     check_in: now,
+                    in_latitude: coords?.latitude,
+                    in_longitude: coords?.longitude,
+                    in_mode: 'manual',
                 });
             }
             // Refresh status

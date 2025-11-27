@@ -17,8 +17,30 @@ export const PARTNER_FIELDS = {
 } as const;
 
 export const ATTENDANCE_FIELDS = {
-  BASIC: ["employee_id", "check_in", "check_out"],
-  DETAILED: ["employee_id", "check_in", "check_out"],
+  BASIC: [
+    "employee_id",
+    "check_in",
+    "check_out",
+    "in_latitude",
+    "in_longitude",
+    "out_latitude",
+    "out_longitude",
+    "in_mode",
+  ],
+  DETAILED: [
+    "employee_id",
+    "check_in",
+    "check_out",
+    "in_latitude",
+    "in_longitude",
+    "out_latitude",
+    "out_longitude",
+    "in_mode",
+    "in_city",
+    "in_country_name",
+    "out_city",
+    "out_country_name",
+  ],
   ALL: [], // Empty array means fetch all fields
 } as const;
 

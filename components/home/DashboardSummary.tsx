@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 36,
         fontWeight: "bold",
+        lineHeight: 44,
     },
     iconContainer: {
         width: 48,

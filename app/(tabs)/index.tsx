@@ -2,17 +2,20 @@ import { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 
 import { AttendanceButton } from "@/components/home/AttendanceButton";
+import { AttendanceHistory } from "@/components/home/AttendanceHistory";
 import { DashboardSummary } from "@/components/home/DashboardSummary";
-import { HomePartnerList } from "@/components/home/HomePartnerList";
 
 export default function HomeScreen() {
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // TODO: Get actual employee ID from user context or profile
+  const EMPLOYEE_ID = 910;
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <DashboardSummary refreshTrigger={refreshKey} />
       <AttendanceButton onAttendanceChange={() => setRefreshKey((prev) => prev + 1)} />
-      <HomePartnerList />
+      <AttendanceHistory employeeId={EMPLOYEE_ID} refreshTrigger={refreshKey} />
     </ScrollView>
   );
 }
