@@ -13,6 +13,7 @@ interface OdooContextType {
   isLoading: boolean;
   error: string | null;
   uid: number | null;
+  userName: string | null;
   isConfigured: boolean;
   reconnect: () => Promise<void>;
   logout: () => Promise<void>;
@@ -29,6 +30,7 @@ export const OdooProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uid, setUid] = useState<number | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(false);
 
   const connect = async (config: OdooConfigData) => {
@@ -46,6 +48,20 @@ export const OdooProvider: React.FC<{ children: React.ReactNode }> = ({
       setUid(authenticatedUid);
       setIsAuthenticated(true);
       setError(null); // Clear any previous errors
+
+      // Fetch user's display name
+      try {
+        const userInfo = await odooClient.call("res.users", "read", [
+          [authenticatedUid],
+          ["name"],
+        ]);
+        if (userInfo && userInfo[0]) {
+          setUserName(userInfo[0].name);
+        }
+      } catch (e) {
+        console.log("Could not fetch user name");
+        setUserName(config.username); // Fallback to login username
+      }
 
       console.log("✅ Connected! UID:", authenticatedUid);
     } catch (err: any) {
@@ -74,9 +90,24 @@ export const OdooProvider: React.FC<{ children: React.ReactNode }> = ({
       console.log("💾 Connection successful, saving config...");
       await configManager.saveConfig(config);
 
+      // Fetch user's display name
+      let fetchedUserName = config.username;
+      try {
+        const userInfo = await odooClient.call("res.users", "read", [
+          [authenticatedUid],
+          ["name"],
+        ]);
+        if (userInfo && userInfo[0]) {
+          fetchedUserName = userInfo[0].name;
+        }
+      } catch (e) {
+        console.log("Could not fetch user name, using login");
+      }
+
       // Update ALL states together to avoid flickering
       setClient(odooClient);
       setUid(authenticatedUid);
+      setUserName(fetchedUserName);
       setIsAuthenticated(true);
       setIsConfigured(true);
       setError(null);
@@ -92,6 +123,7 @@ export const OdooProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsAuthenticated(false);
       setClient(null);
       setUid(null);
+      setUserName(null);
       setIsLoading(false);
       throw err;
     }
@@ -112,6 +144,7 @@ export const OdooProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsAuthenticated(false);
     setIsConfigured(false);
     setUid(null);
+    setUserName(null);
     console.log("✅ Logged out");
   };
 
@@ -161,6 +194,7 @@ export const OdooProvider: React.FC<{ children: React.ReactNode }> = ({
         isLoading,
         error,
         uid,
+        userName,
         isConfigured,
         reconnect,
         logout,
