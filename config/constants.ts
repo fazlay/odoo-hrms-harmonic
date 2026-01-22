@@ -8,6 +8,10 @@ export const ODOO_MODELS = {
   PRODUCT: "product.product",
   INVOICE: "account.move",
   ATTENDANCE: "hr.attendance",
+  TIMESHEET: "account.analytic.line",
+  PROJECT: "project.project",
+  TASK: "project.task",
+  EMPLOYEE: "hr.employee",
 } as const;
 
 export const PARTNER_FIELDS = {
@@ -42,6 +46,39 @@ export const ATTENDANCE_FIELDS = {
     "out_country_name",
   ],
   ALL: [], // Empty array means fetch all fields
+} as const;
+
+export const TIMESHEET_FIELDS = {
+  BASIC: [
+    "id",
+    "name",
+    "date",
+    "unit_amount",
+    "employee_id",
+    "project_id",
+    "task_id",
+  ],
+  DETAILED: [
+    "id",
+    "name",
+    "date",
+    "unit_amount",
+    "employee_id",
+    "project_id",
+    "task_id",
+    "account_id",
+    "company_id",
+    "create_date",
+    "write_date",
+  ],
+} as const;
+
+export const PROJECT_FIELDS = {
+  BASIC: ["id", "name", "display_name", "active", "allow_timesheets"],
+} as const;
+
+export const TASK_FIELDS = {
+  BASIC: ["id", "name", "display_name", "project_id", "allow_timesheets"],
 } as const;
 
 export const DEFAULT_LIMITS = {

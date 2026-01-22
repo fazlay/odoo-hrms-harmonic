@@ -49,3 +49,32 @@ export interface ApiResponse<T> {
   error: string | null;
   isLoading: boolean;
 }
+
+// Timesheet model type
+export interface Timesheet {
+  id: number;
+  name: string; // Description
+  date: string;
+  unit_amount: number; // Hours
+  employee_id: [number, string] | false; // [id, name] or false
+  project_id: [number, string] | false; // [id, name] or false
+  task_id: [number, string] | false; // [id, name] or false
+}
+
+// Project model type
+export interface Project {
+  id: number;
+  name: string;
+  display_name: string;
+  active: boolean;
+  allow_timesheets?: boolean;
+}
+
+// Task model type
+export interface Task {
+  id: number;
+  name: string;
+  display_name: string;
+  project_id: [number, string] | false;
+  allow_timesheets?: boolean;
+}
